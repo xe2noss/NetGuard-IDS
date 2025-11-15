@@ -1,0 +1,34 @@
+# Note: This file is for demonstration.
+# The current rules are hard-coded in 'backend/detection/signature_rules.py'
+# A future enhancement would be to load and parse these rules dynamically.
+
+signature_rules:
+  - id: xmas_scan
+    name: "Nmap Xmas Scan"
+    description: "Detects TCP packets with FIN, PSH, URG flags set"
+    severity: HIGH
+    enabled: true
+    
+  - id: ssh_brute_force
+    name: "SSH Brute Force"
+    description: "Multiple failed SSH login attempts"
+    severity: CRITICAL
+    threshold: 5
+    time_window: 60
+    enabled: true
+    
+  - id: port_scan
+    name: "Port Scan Detection"
+    description: "Single source scanning multiple ports"
+    severity: HIGH
+    threshold: 20
+    time_window: 30
+    enabled: true
+    
+  - id: icmp_flood
+    name: "ICMP Flood"
+    description: "High volume of ICMP requests"
+    severity: MEDIUM
+    threshold: 100
+    time_window: 10
+    enabled: true

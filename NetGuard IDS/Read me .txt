@@ -1,0 +1,107 @@
+🛡️ NetGuard IDS - Final Year Project
+
+A lightweight, deployable Network Intrusion Detection System built with Python (FastAPI, Scapy), React, and Docker.
+
+This project is a fully-functional, real-world-ready application that monitors network traffic, detects common threats, and displays them on a live dashboard.
+
+Features
+
+Real-time Packet Sniffing: Uses Scapy to monitor a specified network interface.
+
+Signature-Based Detection: Detects common attacks (Port Scans, SSH Brute Force, Nmap Xmas Scans, ICMP Floods).
+
+Stateful Analysis: Tracks attacks over time (e.g., 5 SSH attempts in 60 seconds).
+
+Real-time Dashboard: A modern React frontend with live alerts via WebSockets.
+
+Analytics: See charts for top attackers and alert types.
+
+Containerized: Fully deployable with a single docker-compose command.
+
+Easy to Understand: Clear 3-tier architecture (Frontend, Backend, Database).
+
+Architecture
+
+The system consists of three main services managed by Docker Compose:
+
+Frontend (frontend): A React application (built with Vite) and served by Nginx. It displays the dashboard and communicates with the backend.
+
+Backend (backend): A FastAPI (Python) application that:
+
+Spawns a thread to run the Scapy Sniffer.
+
+Uses a Detection Engine to analyze packets.
+
+Saves alerts to the Database.
+
+Provides a REST API (/api) for the frontend.
+
+Manages a WebSocket (/api/ws) to push live alerts.
+
+Database (database): A PostgreSQL database to store and persist all generated alerts.
+
+🚀 How to Run (Quick Start)
+
+Prerequisites
+
+Docker
+
+Docker Compose
+
+Installation
+
+Clone the project:
+(Or just create the files and folders as shown).
+
+Create your Environment File:
+In the root netguard-ids/ directory, copy the example:
+
+cp .env.example .env
+
+
+Edit your .env file:
+Open the new .env file and:
+
+Set a secure DB_PASSWORD.
+
+CRITICAL: Change NETWORK_INTERFACE to your computer's active network interface.
+
+On Linux/macOS, find this with ifconfig or ip addr.
+
+Common names are eth0, en0, wlan0.
+
+Build and Run the System:
+From the root netguard-ids/ directory, run:
+
+docker-compose build
+docker-compose up -d
+
+
+Access the System:
+
+Frontend Dashboard: http://localhost:3000
+
+Backend API Docs: http://localhost:8000/docs
+
+🧪 How to Test
+
+Once the IDS is running, you can simulate attacks to see alerts appear on the dashboard.
+
+Port Scan:
+
+nmap -p 1-1000 localhost
+
+
+Xmas Scan:
+
+nmap -sX localhost
+
+
+SSH Brute Force (run 5+ times):
+
+ssh user@localhost
+
+
+ICMP Flood (requires root):
+
+sudo ping -f localhost -c 200

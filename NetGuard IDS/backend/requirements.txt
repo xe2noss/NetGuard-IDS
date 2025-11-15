@@ -1,0 +1,8 @@
+fastapi==0.111.1
+uvicorn[standard]==0.30.3
+sqlalchemy==2.0.31
+psycopg2-binary==2.9.9
+scapy==2.5.0
+pydantic-settings==2.3.4
+websockets==12.0
+python-dotenv==1.0.1

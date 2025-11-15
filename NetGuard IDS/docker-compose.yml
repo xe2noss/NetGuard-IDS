@@ -1,0 +1,64 @@
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: netguard-db
+    environment:
+      POSTGRES_DB: netguard
+      POSTGRES_USER: netguard_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme123} # Use .env or default
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - netguard-network
+    healthcheck:
+      # Test to check if Postgres is ready
+      test: ["CMD-SHELL", "pg_isready -U netguard_user -d netguard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: netguard-backend
+    depends_on:
+      database:
+        condition: service_healthy # Wait for DB to be ready
+    environment:
+      DATABASE_URL: postgresql://netguard_user:${DB_PASSWORD:-changeme123}@database:5432/netguard
+      NETWORK_INTERFACE: ${NETWORK_INTERFACE:-eth0}
+      LOG_LEVEL: INFO
+    volumes:
+      - ./backend:/app  # Mount code for live-reloading (dev)
+      - ./rules:/app/rules
+    ports:
+      - "8000:8000" # Expose API
+    networks:
+      - netguard-network
+    # --- CRITICAL for packet sniffing ---
+    # We need elevated permissions to capture network traffic
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: netguard-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80" # Serve Nginx on port 3000
+    networks:
+      - netguard-network
+    restart: unless-stopped
+
+networks:
+  netguard-network:
+    driver: bridge
+
+volumes:
+  postgres_data: # Persist the database data
